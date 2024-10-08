@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home - GameHub</title>
+    <link rel="icon" href="/icons/favicon.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- Navegación -->
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark" style="backdrop-filter: blur(5px);">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">GameHub</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/biblioteca">Biblioteca</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/amigos">Amigos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/juegos">Juegos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/noticias">Noticias</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="rounded-circle" th:src="${urlFotoPerfil}" alt="Foto de perfil" height="30" width="30"/> Mi perfil
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a class="dropdown-item" href="/perfil/editar">Editar perfil</a></li>
+                        <li><a id="logout-link" class="dropdown-item" href="#">Cerrar sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <!-- Card de Bienvenida -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <img class="emoji" th:src="@{https://em-content.zobj.net/source/apple/391/waving-hand_1f44b.png}" alt="Saludo" />
+                        <h5 class="card-title mb-0 ml-2">¡Hola, <span th:text="${nombreUsuario}"></span>!</h5>
+                    </div>
+                    <div class="profile-picture-container text-center">
+                        <img class="profile-picture img-fluid" th:src="${urlFotoPerfil}" alt="Foto de perfil" />
+                    </div>
+                    <div class="d-flex justify-content-around mt-3">
+                        <a href="/biblioteca" class="btn btn-custom">
+                            <img class="emoji-small" src="https://em-content.zobj.net/source/apple/391/books_1f4da.png" alt="Biblioteca"/>
+                            Biblioteca
+                        </a>
+                        <a href="/perfil/editar" class="btn btn-custom">
+                            <img class="emoji-small" src="https://em-content.zobj.net/source/apple/391/bust-in-silhouette_1f464.png" alt="Perfil"/>
+                            Perfil
+                        </a>
+                        <a href="/amigos" class="btn btn-custom">
+                            <img class="emoji-small" src="https://em-content.zobj.net/source/apple/391/sparkling-heart_1f496.png" alt="Amigos"/>
+                            Amigos
+                        </a>
+                        <a href="/juegos" class="btn btn-custom">
+                            <img class="emoji-small" src="https://em-content.zobj.net/source/apple/391/magnifying-glass-tilted-left_1f50d.png" alt="Explorar juegos"/>
+                            Explorar juegos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Noticias -->
+            <div class="news-section mt-4">
+                <h3>Últimas Noticias</h3>
+                <div th:each="noticia : ${ultimasNoticias}" class="card noticia mb-4">
+                    <a th:href="${noticia['url']}" class="card-link">
+                        <div class="row no-gutters">
+                            <div class="col-md-5">
+                                <img th:src="${noticia['urlToImage']}" class="card-img" alt="Imagen de la noticia">
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${noticia['title']}">Título de la noticia</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sección de Recomendaciones -->
+            <div class="recommendations-section mt-4">
+                <h3 class="text-center">Juegos Recomendados</h3>
+                <div class="card-deck">
+                    <div th:each="juego : ${juegos}" class="card">
+                        <img th:src="${juego['background_image']}" class="card-img-top" alt="Imagen del juego">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${juego['name']}">Nombre del juego</h5>
+                            <p class="card-text" th:text="${juego['description_raw']}">Descripción del juego</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Actividad Reciente -->
+            <div class="activity-section mt-4">
+                <h3 class="text-center">Actividad Reciente</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">Has jugado <strong>Juego 1</strong> por 2 horas.</li>
+                    <li class="list-group-item">Has desbloqueado el logro <strong>Logro 1</strong> en <strong>Juego 2</strong>.</li>
+                    <li class="list-group-item">Has hecho un nuevo amigo: <strong>Nombre Amigo</strong>.</li>
+                </ul>
+            </div>
+
+            <!-- Sección de Amigos -->
+            <div class="friends-section mt-4">
+                <h3 class="text-center">Amigos</h3>
+                <div class="list-group">
+                    <!-- Verificar si hay amigos para mostrar -->
+                    <th:block th:if="${not #lists.isEmpty(amigos)}">
+                        <!-- Iterar sobre los amigos -->
+                        <a th:each="amigo : ${amigos}" th:href="@{/perfil/{id}(id=${amigo.id})}" class="list-group-item list-group-item-action">
+                            <img th:src="${amigo.fotoPerfil}" class="rounded-circle" alt="Foto de Amigo" width="50" height="50">
+                            <span th:text="${amigo.nombre}">Nombre Amigo</span>
+                        </a>
+                    </th:block>
+                    <th:block th:unless="${not #lists.isEmpty(amigos)}">
+                        <!-- Mensaje si no hay amigos -->
+                        <p class="text-center">No tienes amigos.</p>
+                        <a href="/amigos" class="btn btn-primary btn-block">Ir a Agregar Amigos</a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer bg-dark text-white text-center py-3 mt-4">
+    <p>&copy; 2024 GameHub. Todos los derechos reservados. | <a href="/terminos" class="text-light">Términos y Condiciones</a> | <a href="/privacidad" class="text-light">Política de Privacidad</a> | <a href="/contacto" class="text-light">Contacto</a></p>
+</footer>
+
+<!-- JavaScript -->
+<script>
+    document.getElementById('logout-link').addEventListener('click', function(event) {
+        event.preventDefault(); // Evita el comportamiento por defecto del enlace
+
+        // Realiza una solicitud POST al endpoint de logout de Spring Security
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            // Redirige a la página de login después de cerrar sesión
+            redirect: 'follow'
+        }).then(function() {
+            window.location.href = '/login'; // Redirige a la página de login
+        });
+    });
+</script>
+</body>
+</html>
