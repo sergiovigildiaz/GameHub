@@ -69,12 +69,6 @@
                     <button class="btn btn-danger mt-auto" th:onclick="'eliminarJuego(event, ' + ${juego.id} + ')'" >
                         <i class="fas fa-trash"></i> Eliminar juego
                     </button>
-                    <!-- Botón para iniciar/detener el cronómetro -->
-                    <button class="btn btn-secondary mt-2" th:onclick="'cronometroJuego(event, ' + ${juego.id} + ')'" id="cronometro-btn-${juego.id}">
-                        <i class="fas fa-stopwatch"></i> Iniciar
-                    </button>
-                    <!-- Mostrar el tiempo total jugado -->
-                    <p class="mt-2">Tiempo jugado: <span id="tiempo-total-${juego.id}" th:text="${juego.tiempoTotal}">0:00:00</span></p>
                 </div>
             </div>
         </div>

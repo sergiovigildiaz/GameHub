@@ -15,15 +15,16 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.core.Authentication;
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
+    import org.springframework.security.core.userdetails.User;
     import org.springframework.security.core.userdetails.UserDetails;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.web.bind.annotation.*;
-
+    import org.springframework.web.servlet.view.RedirectView;
+    import com.example.demo.model.BibliotecaJuego;
     import java.security.Principal;
-    import java.util.List;
-    import java.util.Optional;
-    import java.util.Set;
+    import java.util.*;
+    import java.util.stream.Collectors;
 
     @Controller
     @CrossOrigin(origins = "http://localhost:9090")
@@ -37,6 +38,9 @@
 
         @Autowired
         private UsuarioRepository usuarioRepository;
+
+        @Autowired
+        private SolicitudAmistadService solicitudAmistadService;
 
         @GetMapping("/registro")
         public String mostrarFormularioRegistro(Model model) {
@@ -75,16 +79,25 @@
         @GetMapping("/amigos")
         public String mostrarAmigos(Authentication authentication, Model model) {
             String email = authentication.getName();
-            Usuario usuario = usuarioRepository.findByEmail(email);
+            Usuario usuario = usuarioRepository.findByEmail(email); // Obtener el usuario autenticado
+
+            // Obtener amigos y solicitudes
             Set<Usuario> amigos = usuario.getAmigos();
             List<SolicitudAmistad> solicitudesEnviadas = solicitudAmistadRepository.findByRemitenteAndEstado(usuario, SolicitudAmistad.EstadoSolicitud.PENDIENTE);
             List<SolicitudAmistad> solicitudesRecibidas = solicitudAmistadRepository.findByDestinatarioAndEstado(usuario, SolicitudAmistad.EstadoSolicitud.PENDIENTE);
+            String fotoPerfil = usuario.getFotoPerfil();
 
+            // Obtener el ID del usuario
+            int usuarioId = usuario.getId(); // Aquí obtienes el ID del usuario
+
+            // Agregar datos al modelo
             model.addAttribute("amigos", amigos);
             model.addAttribute("solicitudesEnviadas", solicitudesEnviadas);
             model.addAttribute("solicitudesRecibidas", solicitudesRecibidas);
+            model.addAttribute("urlFotoPerfil", fotoPerfil);
+            model.addAttribute("usuarioId", usuarioId); // Agregar el ID del usuario al modelo
 
-            return "amigos";
+            return "amigos"; // Devuelve la vista
         }
 
         @GetMapping("/solicitudesAmistad")
@@ -94,6 +107,7 @@
             return "solicitudesAmistad";
         }
 
+        /*
         @PostMapping("/enviarSolicitudAmistad")
         public String enviarSolicitudAmistad(@RequestParam String email, Principal principal, Model model) {
             try {
@@ -104,10 +118,33 @@
             }
             return "redirect:/amigos";
         }
+        */
+
+        @PostMapping("/enviarSolicitudAmistad")
+        @ResponseBody  // Importante para manejar respuesta JSON
+        public ResponseEntity<String> enviarSolicitudAmistad(@RequestParam String email, Principal principal) {
+            try {
+                // Obtener el usuario remitente
+                Usuario remitente = usuarioService.findByEmail(principal.getName());
+
+                // Obtener el destinatario
+                Usuario destinatario = usuarioService.findByEmail(email);
+                if (destinatario == null) {
+                    return ResponseEntity.badRequest().body("El usuario destinatario no existe.");
+                }
+
+                // Llamar al servicio para enviar la solicitud de amistad
+                solicitudAmistadService.enviarSolicitudAmistad(remitente, destinatario);
+
+                return ResponseEntity.ok("Solicitud de amistad enviada con éxito.");
+            } catch (RuntimeException e) {
+                return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            }
+        }
 
         @PostMapping("/aceptarSolicitud")
         @ResponseBody
-        public String aceptarSolicitud(Authentication authentication, @RequestParam("solicitudId") Long solicitudId) {
+        public RedirectView aceptarSolicitud(Authentication authentication, @RequestParam("solicitudId") Long solicitudId) {
             Optional<SolicitudAmistad> solicitudOpt = solicitudAmistadRepository.findById(solicitudId);
             if (solicitudOpt.isPresent()) {
                 SolicitudAmistad solicitud = solicitudOpt.get();
@@ -116,9 +153,11 @@
                     throw new RuntimeException("Solicitud no pertenece al usuario destinatario.");
                 }
 
+                // Cambiar el estado de la solicitud
                 solicitud.setEstado(SolicitudAmistad.EstadoSolicitud.ACEPTADA);
                 solicitudAmistadRepository.save(solicitud);
 
+                // Agregar amigos
                 Usuario remitente = solicitud.getRemitente();
                 Usuario destinatario = solicitud.getDestinatario();
                 remitente.getAmigos().add(destinatario);
@@ -128,7 +167,8 @@
                 usuarioRepository.save(destinatario);
             }
 
-            return "redirect:/amigos";
+            // Redirigir a la página de amigos
+            return new RedirectView("/amigos");
         }
 
         @PostMapping("/rechazarSolicitud")
@@ -140,12 +180,45 @@
 
         @PostMapping("/eliminarAmigo/{amigoId}")
         @ResponseBody
-        public ResponseEntity<String> eliminarAmigo(@PathVariable Long amigoId) {
+        public RedirectView eliminarAmigo(@PathVariable Long amigoId) {
             try {
                 usuarioService.eliminarAmigo(amigoId);
-                return ResponseEntity.ok("Amigo eliminado correctamente");
+                return new RedirectView("/amigos");
             } catch (RuntimeException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar amigo: " + e.getMessage());
+                return new RedirectView("/amigos?error=" + e.getMessage());
             }
+        }
+
+        @GetMapping("/amigos/{id}/detalles")
+        @ResponseBody
+        public ResponseEntity<?> obtenerDetallesAmigo(@PathVariable Long id) {
+            // Buscar al usuario por su ID
+            Usuario amigo = usuarioService.obtenerUsuarioPorId(id);
+            if (amigo == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Amigo no encontrado");
+            }
+
+            // Crear una estructura de respuesta con los detalles necesarios
+            Map<String, Object> detallesAmigo = new HashMap<>();
+            detallesAmigo.put("nombre", amigo.getNombre());
+            detallesAmigo.put("apellidos", amigo.getApellidos());
+            detallesAmigo.put("fotoPerfil", amigo.getFotoPerfil());
+            detallesAmigo.put("email", amigo.getEmail());
+            detallesAmigo.put("anioNacimiento", amigo.getFechaNacimiento());
+
+            List<Map<String, Object>> juegos = amigo.getBiblioteca().stream()
+                    .map(juego -> {
+                        Map<String, Object> juegoInfo = new HashMap<>();
+                        juegoInfo.put("nombre", juego.getNombreJuego());
+                        juegoInfo.put("foto", juego.getImagenJuego());
+                        juegoInfo.put("fechaSalida", juego.getAnioSalida());
+                        juegoInfo.put("plataformas", juego.getPlataformas());
+                        return juegoInfo;
+                    })
+                    .collect(Collectors.toList());
+
+            detallesAmigo.put("juegos", juegos);
+
+            return ResponseEntity.ok(detallesAmigo); // Devolver los detalles del amigo en formato JSON
         }
     }

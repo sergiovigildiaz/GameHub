@@ -58,7 +58,7 @@ public class SecurityConfig {
                             response.sendRedirect("/403");
                         })
                 );
-
+        
         return http.build();
     }
 }

@@ -51,4 +51,6 @@ public class BibliotecaJuego {
         this.usuario = usuario;
         this.tiempoTotal = "0:00:00";  // Valor por defecto o inicialización
     }
+
+
 }

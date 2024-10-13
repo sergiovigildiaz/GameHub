@@ -34,4 +34,12 @@ public class SolicitudAmistad {
         ACEPTADA,
         RECHAZADA
     }
+
+    // Constructor que inicializa remitente y destinatario
+    public SolicitudAmistad(Usuario remitente, Usuario destinatario) {
+        this.remitente = remitente;
+        this.destinatario = destinatario;
+        this.fechaEnvio = LocalDateTime.now(); // Asignar la fecha y hora actual
+        this.estado = EstadoSolicitud.PENDIENTE; // Estado inicial
+    }
 }

@@ -139,8 +139,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="gameModalLabel">Detalles del Juego</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="font-size: 1.5rem; background: none; border: none;">
+                    &times;
                 </button>
             </div>
             <div class="modal-body">
@@ -187,6 +187,7 @@
                 let metacritic = data.metacritic ? data.metacritic : 'N/A';
                 let platforms = data.platforms.map(p => `<p class="plataforma">${p.platform.name}</p>`).join('');
                 let genres = data.genres.map(g => `<p class="genero">${g.name}</p>`).join('');
+
                 let developers = data.developers.map(d => d.name).join(', ');
                 let publishers = data.publishers.map(p => p.name).join(', ');
 

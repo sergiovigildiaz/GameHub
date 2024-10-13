@@ -88,34 +88,6 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void enviarSolicitudAmistad(String remitenteEmail, String destinatarioEmail) {
-        Usuario remitente = usuarioRepository.findByEmail(remitenteEmail);
-        Usuario destinatario = usuarioRepository.findByEmail(destinatarioEmail);
-
-        if (destinatario == null) {
-            throw new RuntimeException("El usuario destinatario no existe.");
-        }
-
-        // Verificar si ya son amigos
-        if (remitente.getAmigos().contains(destinatario)) {
-            throw new RuntimeException("Ya son amigos.");
-        }
-
-        // Verificar si ya se ha enviado una solicitud de amistad
-        boolean solicitudExistente = solicitudAmistadRepository.findByRemitenteAndDestinatario(remitente, destinatario).isPresent();
-        if (solicitudExistente) {
-            throw new RuntimeException("Ya has enviado una solicitud de amistad a este usuario.");
-        }
-
-        SolicitudAmistad solicitud = new SolicitudAmistad();
-        solicitud.setRemitente(remitente);
-        solicitud.setDestinatario(destinatario);
-        solicitud.setEstado(SolicitudAmistad.EstadoSolicitud.PENDIENTE);
-
-        solicitudAmistadRepository.save(solicitud);
-    }
-
-    @Transactional
     public void aceptarSolicitud(String destinatarioEmail, Long solicitudId) {
         SolicitudAmistad solicitud = solicitudAmistadRepository.findById(solicitudId).orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
         if (!solicitud.getDestinatario().getEmail().equals(destinatarioEmail)) {

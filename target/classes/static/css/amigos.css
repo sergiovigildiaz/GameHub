@@ -33,6 +33,7 @@ body {
     background-color: #1e1e1e;
     border: none;
     margin-bottom: 20px;
+    border-radius: 10px;
 }
 
 .card-title {
@@ -41,12 +42,13 @@ body {
 }
 
 .list-group-item {
-    background-color: #212121;
+    background-color: #6200ea;
     border-color: #343a40;
+    position: relative;
 }
 
 .list-group-item:hover {
-    background-color: #343a40;
+    background-color: #8343e5;
 }
 
 .btn-primary {
@@ -91,4 +93,181 @@ footer {
 
 .btn-sm {
     margin-left: 40%;
+}
+
+.btn-eliminar-amigo {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-eliminar-amigo:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Estilos para la ventana que muestra los detalles del amigo */
+.modal-header {
+    background-color: #6200ea;
+    color: white;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    text-align: center;
+    background-color: #121212;
+}
+
+.modal-body img {
+    border-radius: 10%;
+}
+
+.badge {
+    margin: 5px;
+}
+
+/* CSS para el carrusel de juegos */
+.game-carousel {
+    display: flex; /* Usar flexbox para los juegos */
+    overflow-x: auto; /* Permitir el desplazamiento horizontal */
+    padding: 10px 0; /* Espacio vertical */
+}
+
+.game-card {
+    background-color: #212121;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 10px;
+    transition: transform 0.3s ease;
+    flex: 0 0 auto; /* Para que las cartas no se estiren */
+    width: 200px; /* Ajusta el ancho según tus necesidades */
+}
+
+.game-card img {
+    border-radius: 15px;
+    object-fit: cover;
+    height: 200px;
+}
+
+.game-card:hover {
+    transform: translateY(-5px); /* Efecto al pasar el ratón */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.fecha-salida {
+    background-color: #f0f0f0;
+    color: #333;
+    border-radius: 15px;
+    padding: 5px 5px;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.plataforma {
+    background-color: #6200ea;
+    border-color: #6200ea;
+    color: white;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* Media queries para ajustar el ancho de las tarjetas en pantallas más pequeñas */
+@media (max-width: 768px) {
+    .game-card {
+        width: 100px; /* Ancho reducido en pantallas móviles */
+    }
+}
+
+.nombre-amigo {
+    font-weight: bold;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-right: 1rem;
+    border-radius: 10%;
+}
+
+/* Estilos para el botón de eliminar */
+.delete-button {
+    right: 10px; /* Alineado a la derecha */
+    top: 50%; /* Centrado verticalmente */
+    transform: translateY(-50%); /* Ajuste vertical */
+    background-color: red; /* Color de fondo rojo */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    color: white; /* Color del texto */
+    cursor: pointer; /* Cursor tipo puntero */
+}
+
+.btn-info{
+    right: 10px; /* Alineado a la derecha */
+    top: 50%; /* Centrado verticalmente */
+    transform: translateY(-50%); /* Ajuste vertical */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor tipo puntero */
+}
+
+/* Asegúrate de que el contenedor del amigo esté posicionado relativamente */
+.list-group-item {
+    position: relative; /* Necesario para que el botón se posicione correctamente */
+}
+
+.chat-messages {
+    padding: 10px;
+    max-height: 350px; /* Altura máxima del área de mensajes */
+    overflow-y: auto;
+}
+
+.chat-message {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chat-message img {
+    border-radius: 50%; /* Hacer las imágenes de perfil redondas */
+    width: 40px; /* Ajustar el tamaño de la imagen */
+    height: 40px; /* Ajustar el tamaño de la imagen */
+    margin: 0 10px; /* Espaciado alrededor de la imagen */
+}
+
+.message-sender {
+    background-color: #dcf8c6; /* Verde claro para el remitente */
+    border-radius: 15px; /* Esquinas redondeadas */
+    padding: 10px;
+    max-width: 70%;
+    margin-left: auto; /* Alinear a la derecha */
+}
+
+.message-recipient {
+    background-color: #fff; /* Blanco para el destinatario */
+    border-radius: 15px; /* Esquinas redondeadas */
+    padding: 10px;
+    max-width: 70%;
+    margin-right: auto; /* Alinear a la izquierda */
 }

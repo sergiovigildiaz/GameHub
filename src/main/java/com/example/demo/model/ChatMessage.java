@@ -9,16 +9,23 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Mensaje {
+@AllArgsConstructor
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contenido;
-    private String remitenteId;  // ID del usuario que envió el mensaje
-    private String destinatarioId; // ID del usuario que recibe el mensaje
+    private String content; // Mensaje
+
     private LocalDateTime timestamp;
+
+    @ManyToOne
+    @JoinColumn(name = "remitente_id", nullable = false)
+    private Usuario remitente;
+
+    @ManyToOne
+    @JoinColumn(name = "destinatario_id", nullable = false)
+    private Usuario destinatario;
 }

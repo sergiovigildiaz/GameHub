@@ -80,5 +80,10 @@ public class Usuario {
         return Objects.hash(id);
     }
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BibliotecaJuego> biblioteca = new ArrayList<>();
 
+    public boolean esAmigo(Usuario otroUsuario) {
+        return this.amigos.contains(otroUsuario);
+    }
 }

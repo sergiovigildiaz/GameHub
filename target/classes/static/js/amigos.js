@@ -49,3 +49,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+function eliminarAmigo(amigoId) {
+        // Crear un formulario para enviar la solicitud de eliminación
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/eliminarAmigo/${amigoId}`;
+
+        // Agregar CSRF token si es necesario
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '${_csrf.parameterName}';
+        csrfInput.value = '${_csrf.token}';
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit(); // Enviar el formulario
+}
