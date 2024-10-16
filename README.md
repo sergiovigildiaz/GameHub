@@ -42,4 +42,7 @@ He decidido utilizarlo en mi proyecto para mantener una estructura modular y fac
 ![image (2)](https://github.com/user-attachments/assets/7a4dbfb1-e1a3-434d-a726-b07f33993eb3)
 ![image (3)](https://github.com/user-attachments/assets/acf99fd0-1ad3-4d7d-b702-94e831b227b7)
 ![image (4)](https://github.com/user-attachments/assets/ab78c769-b19b-41b1-b7fe-7a09e7a5940f)
+![image](https://github.com/user-attachments/assets/9480047f-a54c-4400-8431-24e8739f47c4)
+![image](https://github.com/user-attachments/assets/da1ba2ae-d282-48a0-9823-8b6894a8b2bb)
+
 
