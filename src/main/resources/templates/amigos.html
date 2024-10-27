@@ -72,26 +72,25 @@
                 <div class="card-body">
                     <h2 class="card-title text-center mb-4">Lista de Amigos</h2>
                     <div class="list-group">
-                        <div th:each="amigo : ${amigos}" class="list-group-item" style="cursor: pointer;">
-                            <div class="d-flex align-items-center" th:onclick="|cargarDetallesAmigo(${amigo.id})|">
-                                <img th:src="${amigo.fotoPerfil}" alt="Foto de perfil" class="profile-pic me-3">
-                                <div class="flex-grow-1">
-                                    <h5 th:text="${amigo.nombre + ' ' + amigo.apellidos}"></h5>
-                                    <p th:text="${amigo.email}"></p>
+                        <div th:each="amigo : ${amigos}" class="list-group-item" data-id="${amigo.id}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="cursor: pointer;" th:onclick="|cargarDetallesAmigo(${amigo.id})|">
+                                    <img th:src="${amigo.fotoPerfil}" alt="Foto de perfil" class="profile-pic me-3">
+                                    <div class="flex-grow-1">
+                                        <h5 class="nombre-amigo" th:text="${amigo.nombre + ' ' + amigo.apellidos}"></h5>
+                                        <p th:text="${amigo.email}"></p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-end mt-2">
-                                <!-- Botón de chat -->
-                                <button class="btn btn-info btn-sm me-2" title="Chat"
-                                        th:data-id="${amigo.id}"
-                                        th:data-nombre="${amigo.nombre + ' ' + amigo.apellidos}"
-                                        onclick="abrirChat(this)">
-                                    <i class="fas fa-comment-dots"></i>
-                                </button>
-                                <!-- Botón de eliminar -->
-                                <button class="delete-button" th:onclick="'eliminarAmigo(' + ${amigo.id} + ')' " title="Eliminar amigo">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <div class="delete-btn-container d-flex">
+                                    <!-- Botón de abrir chat -->
+                                    <button class="btn btn-sm btn-chat" th:onclick="'abrirChat(' + ${amigo.id} + ')'" title="Abrir chat">
+                                        <i class="fas fa-comment"></i>
+                                    </button>
+                                    <!-- Botón de eliminar -->
+                                    <button class="delete-button btn btn-sm" th:onclick="'eliminarAmigo(' + ${amigo.id} + ')' " title="Eliminar amigo">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <!-- Texto cuando no hay amigos -->
@@ -101,8 +100,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
         </div>
         <div class="col-lg-6">
             <div class="card">
@@ -117,16 +114,6 @@
                                     <div>
                                         <h5 th:text="${solicitud.destinatario.nombre + ' ' + solicitud.destinatario.apellidos}"></h5>
                                         <p th:text="${solicitud.destinatario.email}"></p>
-                                    </div>
-                                    <div class="ms-auto">
-                                        <form class="d-inline aceptar-solicitud" th:action="@{/aceptarSolicitud}" method="post">
-                                            <input type="hidden" th:value="${solicitud.id}" name="solicitudId"/>
-                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        </form>
-                                        <form class="d-inline rechazar-solicitud" th:action="@{/rechazarSolicitud}" method="post">
-                                            <input type="hidden" th:value="${solicitud.id}" name="solicitudId"/>
-                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -147,12 +134,12 @@
                                         <p th:text="${solicitud.remitente.email}"></p>
                                     </div>
                                     <div class="ms-auto">
-                                        <form class="d-inline aceptar-solicitud" th:action="@{/aceptarSolicitud}" method="post">
+                                        <form class="d-inline aceptar-solicitud" th:onclick="|aceptarSolicitud(${solicitud.id})|" method="post">
                                             <input type="hidden" th:value="${solicitud.id}" name="solicitudId"/>
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <button type="submit" class="btn btn-success btn-sm">Aceptar</button>
                                         </form>
-                                        <form class="d-inline rechazar-solicitud" th:action="@{/rechazarSolicitud}" method="post">
+                                        <form class="d-inline rechazar-solicitud" th:onclick="|rechazarSolicitud(${solicitud.id})|" method="post">
                                             <input type="hidden" th:value="${solicitud.id}" name="solicitudId"/>
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
@@ -207,7 +194,7 @@
                 </div>
                 <div class="modal-footer">
                     <textarea id="chatInput" class="form-control" placeholder="Escribe tu mensaje..." rows="2"></textarea>
-                    <button id="sendChatButton" class="btn btn-primary ml-2">Enviar</button>
+                    <button id="sendChatButton" th:onclick="enviarMensaje()" class="btn btn-primary ml-2">Enviar</button>
                 </div>
             </div>
         </div>
@@ -215,6 +202,7 @@
 
     <input type="hidden" id="userId" th:value="${usuarioId}"/>
     <input type="hidden" id="userProfilePic" th:value="${urlFotoPerfil}" />
+    <input type="hidden" id="currentUserId" th:value="${usuarioId}"/>
 </main>
 
 <!-- Función para cargar los detalles del amigo -->
@@ -256,11 +244,11 @@
 
                 // Crear las "píldoras" para el email y año de nacimiento
                 const infoHtml = `
-            <img src="${data.fotoPerfil}" class="mb-3" alt="Foto de perfil" height="100" width="100">
-            <h3>${data.nombre} ${data.apellidos}</h3>
-            <p class="badge bg-secondary detalles-amigo">${data.email}</p>
-            <p class="badge bg-secondary detalles-amigo">${anioNacimiento}</p>
-        `;
+                <img src="${data.fotoPerfil}" class="mb-3" alt="Foto de perfil" height="100" width="100">
+                <h3>${data.nombre} ${data.apellidos}</h3>
+                <p class="badge bg-secondary detalles-amigo">${data.email}</p>
+                <p class="badge bg-secondary detalles-amigo">${anioNacimiento}</p>
+            `;
 
                 // Comenzar a construir la sección de juegos
                 let juegosHtml = '';
@@ -286,6 +274,9 @@
                 // Actualizar el modal con la información del amigo y juegos
                 $('#detallesAmigo').html(infoHtml);
                 $('#carouselJuegos').html(juegosHtml);
+
+                // Mostrar el modal después de cargar los detalles
+                $('#amigoModal').modal('show');  // Mostrar el modal
             },
             error: function (error) {
                 console.error('Error al cargar los detalles del amigo:', error);
@@ -310,112 +301,138 @@
             });
         }
     }
-</script>
 
-<!-- Script del chat -->
-<script>
-    let stompClient = null; // Declaración global
+    function abrirChat(amigoId) {
 
-    $(document).ready(function() {
-        connect(); // Llama a la función connect al cargar la página
-    });
-
-    function connect() {
-        const socket = new SockJS('/ws'); // Asegúrate de que la URL sea correcta
-        stompClient = Stomp.over(socket);
-
-        stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/messages', function (message) {
-                showMessage(JSON.parse(message.body));
-            });
-            $('#sendChatButton').prop('disabled', false); // Habilitar el botón de envío
-        }, function (error) {
-            console.error('Connection error: ' + error);
-            $('#sendChatButton').prop('disabled', true); // Deshabilitar el botón de envío si hay un error
+        //Establezco la conexion
+        document.addEventListener("DOMContentLoaded", function() {
+            conectarWS(); // Establecer la conexión WebSocket
         });
+
+        const chatFriendName = document.getElementById("chatFriendName");
+
+        // Establecer el ID del amigo directamente
+        console.log("Amigo ID:", amigoId);
+
+        // Aquí podrías agregar lógica para obtener el nombre del amigo de otra manera si es necesario.
+        // Por ahora, puedes asignar el amigoId como nombre, o dejarlo vacío.
+        chatFriendName.textContent = `Chat con ID: ${amigoId}`; // Placeholder, puedes cambiar esto según tu lógica.
+
+        $('#chatModal').modal('show'); // Muestra el modal del chat
+
+        // Almacena el ID del destinatario en el campo oculto para usarlo al enviar mensajes
+        document.getElementById('chatInput').setAttribute('data-amigo-id', amigoId);
+
     }
 
-    function showMessage(message) {
-        const userId = $('#userId').val(); // Obtener el ID del usuario actual
-        const messageClass = (message.sender === userId) ? 'message-sender' : 'message-recipient';
-        const profilePic = (message.sender === userId) ? $('#userProfilePic').val() : $('#friendProfilePic').val(); // Cambia por el selector correcto
+    function enviarMensaje() {
+        const txtMensaje = document.getElementById("chatInput").value; // Obtiene el contenido del mensaje
+        const remitenteId = document.getElementById("currentUserId").value; // Obtiene el ID del usuario actual
+        const destinatarioId = document.getElementById('chatInput').getAttribute('data-amigo-id'); // Obtiene el ID del amigo
 
-        const chatMessageHtml = `
-        <div class="chat-message">
-            ${message.sender !== userId ? `<img src="${profilePic}" alt="Foto de perfil">` : ''}
-            <div class="${messageClass}">
-                <strong>${message.sender}:</strong> ${message.content}
-            </div>
-            ${message.sender === userId ? `<img src="${profilePic}" alt="Foto de perfil">` : ''}
-        </div>
-    `;
-
-        $('#chatMessages').append(chatMessageHtml);
-        $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight); // Mantener el scroll al final
-    }
-
-    $('#sendChatButton').click(function() {
-        if (!stompClient) {
-            alert('No estás conectado al chat.'); // Mensaje si no está conectado
+        // Validar que el mensaje no esté vacío
+        if (!txtMensaje.trim()) {
+            alert("El mensaje no puede estar vacío.");
             return;
         }
 
-        const message = $('#chatInput').val(); // Obtener el mensaje del textarea
-        const amigoId = $('#sendChatButton').data('id'); // Obtener el ID del amigo desde el botón de enviar
-
-        if (!message) {
-            alert('Por favor, escribe un mensaje antes de enviar.'); // Mensaje de advertencia si está vacío
-            return; // No continuar si el mensaje está vacío
+        // Verificar que stompCliente no sea nulo antes de publicar
+        if (stompCliente) {
+            stompCliente.publish({
+                destination: '/app/envio', // Asegúrate de que la ruta sea correcta
+                body: JSON.stringify({
+                    contenido: txtMensaje,
+                    remitenteId: remitenteId,
+                    destinatarioId: destinatarioId
+                })
+            });
+            document.getElementById("chatInput").value = ''; // Limpia el campo de texto
+        } else {
+            console.error("No se ha establecido la conexión WebSocket.");
+            alert("Error: no se pudo enviar el mensaje, la conexión WebSocket no está activa.");
         }
+    }
 
-        const userId = $('#userId').val(); // Leer el ID del usuario desde el campo oculto
+</script>
+<script>
+    // 1. Definición de la variable para el cliente STOMP
+    let stompCliente = null;
 
-        const chatMessage = {
-            sender: userId, // Asigna el ID del usuario que envía el mensaje
-            content: message.trim(), // Eliminar espacios en blanco al principio y al final
-            recipient: amigoId // Asigna el ID del destinatario
-        };
+    // 2. Conexión WebSocket y configuración STOMP
+    const onConnectSocket = () => {
+        console.log("Conectado al WebSocket."); // Mensaje de depuración
+        stompCliente.subscribe('/tema/mensajes', (mensaje) => {
+            mostrarMensaje(mensaje.body); // Maneja el mensaje recibido
+        });
+    };
 
-        console.log('Mensaje enviado:', chatMessage); // Debug: Ver el mensaje que se está enviando
+    const onWebSocketClose = () => {
+        if (stompCliente != null) {
+            stompCliente.deactivate();
+        }
+    };
 
-        stompClient.send("/app/chat", {}, JSON.stringify(chatMessage)); // Enviar el mensaje
-        $('#chatInput').val(''); // Limpiar el input
+    function conectarWS() {
+        var socket = new SockJS('/websocket');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Conectado: ' + frame);
+            stompClient.subscribe('/topic/mensajes', function(mensaje) {
+                mostrarMensaje(JSON.parse(mensaje.body));
+            });
+        }, function(error) {
+            console.error('Error de conexión:', error);
+        });
+    }
+
+    // 3. Conexión al cargar el DOM
+    document.addEventListener("DOMContentLoaded", function() {
+        conectarWS(); // Establecer la conexión WebSocket al cargar la página
     });
+</script>
+<script>
+    function aceptarSolicitud(solicitudId) {
+        // Obtener el token CSRF desde el meta tag
+        var csrfToken = $('meta[name="_csrf"]').attr('content');
+        var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
-    function abrirChat(button) {
-        const amigoId = $(button).data('id'); // Obtener el ID del amigo desde el botón
-        const amigoNombre = $(button).data('nombre'); // Obtener el nombre del amigo desde el botón
-        $('#chatFriendName').text(amigoNombre); // Asigna el nombre del amigo en el título del chat
-        $('#sendChatButton').data('id', amigoId); // Asigna el ID del amigo al botón de enviar
-        $('#chatModal').modal('show'); // Muestra el modal del chat
-
-        // Obtener los mensajes anteriores
         $.ajax({
-            url: `/mensajes/${$('#userId').val()}/${amigoId}`, // Endpoint para obtener mensajes
-            type: 'GET',
-            success: function(mensajes) {
-                mensajes.forEach(function(mensaje) {
-                    const messageClass = (mensaje.remitenteId === $('#userId').val()) ? 'message-sender' : 'message-recipient';
-                    $('#chatMessages').append(`
-                    <div class="chat-message">
-                        ${mensaje.remitenteId !== $('#userId').val() ? `<img src="${amigo.fotoPerfil}" alt="Foto de perfil">` : ''}
-                        <div class="${messageClass}">
-                            <strong>${mensaje.remitenteId}:</strong> ${mensaje.contenido}
-                        </div>
-                        ${mensaje.remitenteId === $('#userId').val() ? `<img src="${$('#userProfilePic').val()}" alt="Foto de perfil">` : ''}
-                    </div>
-                `);
-                });
-                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight); // Mantener el scroll al final
+            url: '/aceptarSolicitud',
+            type: 'POST',
+            data: { solicitudId: solicitudId },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken); // Añadir el token CSRF al header
             },
-            error: function(error) {
-                console.error('Error al cargar los mensajes:', error);
+            success: function(response) {
+                location.reload(); // Recargar la página tras aceptar la solicitud
+            },
+            error: function(xhr) {
+                alert('Error al aceptar la solicitud.');
+            }
+        });
+    }
+
+    function rechazarSolicitud(solicitudId) {
+        // Obtener el token CSRF desde el meta tag
+        var csrfToken = $('meta[name="_csrf"]').attr('content');
+        var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+        $.ajax({
+            url: '/rechazarSolicitud',
+            type: 'POST',
+            data: { solicitudId: solicitudId },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken); // Añadir el token CSRF al header
+            },
+            success: function(response) {
+                location.reload(); // Recargar la página tras rechazar la solicitud
+            },
+            error: function(xhr) {
+                alert('Error al rechazar la solicitud.');
             }
         });
     }
 </script>
-
 <script>
     document.getElementById('logout-link').addEventListener('click', function(event) {
         event.preventDefault();

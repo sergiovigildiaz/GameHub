@@ -9,6 +9,7 @@ import java.util.Date;
 public class UsuarioRegistroDTO {
     private String nombre;
     private String email;
+    private String nombreUsuario;
     private String contrasenia;
     private String apellidos;
     private String pais;

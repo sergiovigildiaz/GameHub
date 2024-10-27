@@ -1,30 +1,34 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.MensajeDTO;
 import com.example.demo.model.Mensaje;
-import com.example.demo.model.Usuario;
 import com.example.demo.repository.MensajeRepository;
-import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.MensajeService;
-import com.example.demo.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
-@RequestMapping("/mensajes")
+@RestController
 public class MensajeController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private MensajeService mensajeService;
 
+    @MessageMapping("/envio") // Ruta que se usará en el WebSocket
+    @SendTo("/tema/mensajes") // Dónde se enviarán los mensajes
+    public Mensaje enviarMensaje(Mensaje mensaje) {
+        // Procesar y devolver el mensaje
+        return mensaje;
+    }
 
-
+    // Si necesitas una ruta REST para obtener mensajes
+    @PostMapping("/obtenerMensajes")
+    public List<Mensaje> obtenerMensajes(@RequestBody String remitenteId, String destinatarioId) {
+        return mensajeService.obtenerMensajes(remitenteId, destinatarioId);
+    }
 }

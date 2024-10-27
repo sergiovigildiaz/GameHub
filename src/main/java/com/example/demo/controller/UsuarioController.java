@@ -19,6 +19,7 @@
     import org.springframework.security.core.userdetails.UserDetails;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
+    import org.springframework.validation.BindingResult;
     import org.springframework.web.bind.annotation.*;
     import org.springframework.web.servlet.view.RedirectView;
     import com.example.demo.model.BibliotecaJuego;
@@ -49,9 +50,20 @@
         }
 
         @PostMapping("/registro")
-        public String registrarUsuario(@ModelAttribute UsuarioRegistroDTO usuarioRegistroDTO) {
+        public String registrarUsuario(@ModelAttribute UsuarioRegistroDTO usuarioRegistroDTO, BindingResult result) {
+            // Verificar si el nombre de usuario ya existe
+            if (usuarioService.nombreUsuarioExistente(usuarioRegistroDTO.getNombreUsuario())) {
+                result.rejectValue("nombreUsuario", "error.usuario", "El nombre de usuario ya está en uso.");
+            }
+
+            // Si hay errores, volver a la página de registro
+            if (result.hasErrors()) {
+                return "registro"; // Asegúrate de que este es el nombre correcto de tu vista de registro
+            }
+
+            // Si todo está bien, registrar el nuevo usuario
             usuarioService.registrarNuevoUsuario(usuarioRegistroDTO);
-            return "redirect:/login";
+            return "redirect:/login"; // Redirigir después de registrar
         }
 
         @GetMapping("/login")

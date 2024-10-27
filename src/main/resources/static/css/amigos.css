@@ -213,9 +213,6 @@ footer {
 
 /* Estilos para el botón de eliminar */
 .delete-button {
-    right: 10px; /* Alineado a la derecha */
-    top: 50%; /* Centrado verticalmente */
-    transform: translateY(-50%); /* Ajuste vertical */
     background-color: red; /* Color de fondo rojo */
     border: none; /* Sin borde */
     border-radius: 5px; /* Bordes redondeados */
@@ -270,4 +267,21 @@ footer {
     padding: 10px;
     max-width: 70%;
     margin-right: auto; /* Alinear a la izquierda */
+}
+
+/* Botón de chat */
+.btn-chat {
+    background-color: #4b0082;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-chat:hover {
+    background-color: #6200ea;
+}
+
+.delete-btn-container .btn {
+    margin-left: 10px; /* Añadir espacio entre los botones */
 }

@@ -37,6 +37,7 @@ public class UsuarioService {
         usuario.setNombre(usuarioRegistroDTO.getNombre());
         usuario.setApellidos(usuarioRegistroDTO.getApellidos());
         usuario.setEmail(usuarioRegistroDTO.getEmail());
+        usuario.setNombreUsuario(usuarioRegistroDTO.getNombreUsuario());
         usuario.setPais(usuarioRegistroDTO.getPais());
         usuario.setFechaNacimiento(usuarioRegistroDTO.getFechaNacimiento());
         usuario.setContrasenia(passwordEncoder.encode(usuarioRegistroDTO.getContrasenia())); // Encripta la contraseña
@@ -53,6 +54,10 @@ public class UsuarioService {
         } else {
             throw new RuntimeException("Credenciales inválidas");
         }
+    }
+
+    public boolean nombreUsuarioExistente(String nombreUsuario) {
+        return usuarioRepository.existsByNombreUsuario(nombreUsuario);
     }
 
     public Usuario findByNombre(String nombre) {

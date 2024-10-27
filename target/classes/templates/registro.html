@@ -68,6 +68,14 @@
     <p class="welcome-message">Regístrate para disfrutar de una comunidad de gamers apasionados como tú.</p>
     <form th:action="@{/registro}" th:object="${usuarioRegistroDTO}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
         <div class="form-group">
+            <label for="nombreUsuario">Nombre de usuario:</label>
+            <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" class="form-control" required />
+            <div class="invalid-feedback">Por favor, ingrese un nombre de usuario.</div>
+            <div th:if="${#fields.hasErrors('nombreUsuario')}" class="alert alert-danger">
+                <p th:each="error : ${#fields.errors('nombreUsuario')}" th:text="${error}"></p>
+            </div>
+        </div>
+        <div class="form-group">
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required />
             <div class="invalid-feedback">Por favor, ingrese su nombre.</div>
