@@ -43,3 +43,8 @@ He decidido utilizarlo en mi proyecto para mantener una estructura modular y fac
 ![image (3)](https://github.com/user-attachments/assets/acf99fd0-1ad3-4d7d-b702-94e831b227b7)
 ![image (4)](https://github.com/user-attachments/assets/ab78c769-b19b-41b1-b7fe-7a09e7a5940f)
 
+### Añadida página de Panel de Control para que los administradores (con rol "ADMINISTRADOR") puedan editar o eliminar usuarios y/o foros.
+![image](https://github.com/user-attachments/assets/c199b663-48c6-4a5b-a0f6-c1143d58df62)
+![image](https://github.com/user-attachments/assets/66b27ce7-e918-4ad0-905c-926a2b528091)
+(Página de error si un usuario que no es ADMINISTRADOR intenta entrar en el panel de control)
+
